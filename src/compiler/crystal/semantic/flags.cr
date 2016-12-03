@@ -23,7 +23,7 @@ class Crystal::Program
 
   private def parse_flags(flags_name)
     set = flags_name.map(&.downcase).to_set
-    set.add "darwin" if set.any?(&.starts_with?("macosx"))
+    set.add "darwin" if set.any?(&.starts_with?("macosx")) || set.any?(&.starts_with?("darwin"))
     if set.any?(&.starts_with?("cygnus")) # cygwin
       set.add "linux"
       set.delete "windows" # this is not really windows for compilation purposes
