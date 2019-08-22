@@ -60,7 +60,10 @@ class OpenSSL::SSL::Server
   #
   # This method calls `@wrapped.accept` and wraps the resulting IO in a SSL socket (`OpenSSL::SSL::Socket::Server`) with `context` configuration.
   def accept : OpenSSL::SSL::Socket::Server
-    OpenSSL::SSL::Socket::Server.new(@wrapped.accept, @context, sync_close: @sync_close)
+    socket = @wrapped.accept
+    socket.as(TCPSocket).read_timeout = 60.seconds
+    socket.as(TCPSocket).write_timeout = 60.seconds
+    OpenSSL::SSL::Socket::Server.new(socket, @context, sync_close: @sync_close)
   end
 
   # Implements `::Socket::Server#accept?`.
@@ -68,8 +71,8 @@ class OpenSSL::SSL::Server
   # This method calls `@wrapped.accept?` and wraps the resulting IO in a SSL socket (`OpenSSL::SSL::Socket::Server`) with `context` configuration.
   def accept? : OpenSSL::SSL::Socket::Server?
     if socket = @wrapped.accept?
-      STDERR.puts "using 60.0s"
       socket.as(TCPSocket).read_timeout = 60.seconds
+      socket.as(TCPSocket).write_timeout = 60.seconds
 
       OpenSSL::SSL::Socket::Server.new(socket, @context, sync_close: @sync_close)
     end
