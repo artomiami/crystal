@@ -60,16 +60,26 @@ class OpenSSL::SSL::Server
   #
   # This method calls `@wrapped.accept` and wraps the resulting IO in a SSL socket (`OpenSSL::SSL::Socket::Server`) with `context` configuration.
   def accept : OpenSSL::SSL::Socket::Server
-    OpenSSL::SSL::Socket::Server.new(@wrapped.accept, @context, sync_close: @sync_close)
+    out2 = @wrapped.accept
+    STDERR.puts "using 2s"
+    out2.as(TCPSocket).read_timeout = 6.seconds
+    begin
+    STDERR.puts "@wrappedaccept=#{out2}" rescue nil
+      a=OpenSSL::SSL::Socket::Server.new(out2, @context, sync_close: @sync_close)
+      STDERR.puts "here1"
+a
+    rescue ex
+      STDERR.puts "closing3 #{ex}"
+      out2.close rescue nil
+      raise ex
+    end
   end
 
   # Implements `::Socket::Server#accept?`.
   #
   # This method calls `@wrapped.accept?` and wraps the resulting IO in a SSL socket (`OpenSSL::SSL::Socket::Server`) with `context` configuration.
   def accept? : OpenSSL::SSL::Socket::Server?
-    if socket = @wrapped.accept?
-      OpenSSL::SSL::Socket::Server.new(socket, @context, sync_close: @sync_close)
-    end
+    accept()
   end
 
   # Closes this SSL server.

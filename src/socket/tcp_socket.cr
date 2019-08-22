@@ -60,6 +60,10 @@ class TCPSocket < IPSocket
     end
   end
 
+  def to_s(io : IO) : Nil
+    io << "TCPSocket" << local_address << " " << remote_address << " read=" << read_timeout
+  end
+
   # Returns `true` if the Nable algorithm is disabled.
   def tcp_nodelay?
     getsockopt_bool LibC::TCP_NODELAY, level: Protocol::TCP

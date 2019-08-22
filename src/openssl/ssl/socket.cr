@@ -50,9 +50,22 @@ abstract class OpenSSL::SSL::Socket < IO
     def initialize(io, context : Context::Server = Context::Server.new, sync_close : Bool = false)
       super(io, context, sync_close)
       begin
-        ret = LibSSL.ssl_accept(@ssl)
+        b = OpenSSL::SSL::Error.new(@ssl, -1, "SSL_accept") # flush queue???
+        STDERR.puts "serv init1 #{b}"
+        ret = 3
+        begin
+         ret = LibSSL.ssl_accept(@ssl)
+        rescue ex
+          STDERR.puts "ssl_accept raised? #{ex}"
+        end
+        STDERR.puts "serv init1.5"
         unless ret == 1
-          io.close if sync_close
+          
+          if sync_close
+STDERR.puts "closing1" rescue nil
+STDERR.puts "closing1.5 #{io}" rescue nil
+            io.close rescue nil
+          end
           raise OpenSSL::SSL::Error.new(@ssl, ret, "SSL_accept")
         end
       rescue ex
@@ -123,7 +136,7 @@ abstract class OpenSSL::SSL::Socket < IO
 
     count = slice.size
     bytes = LibSSL.ssl_write(@ssl, slice.to_unsafe, count)
-    unless bytes > 0
+    unless bytes == count
       raise OpenSSL::SSL::Error.new(@ssl, bytes, "SSL_write")
     end
     nil
@@ -169,6 +182,7 @@ abstract class OpenSSL::SSL::Socket < IO
       end
     rescue IO::Error
     ensure
+      STDERR.puts "closing2 #{@bio.io}" rescue nil# why would finalize not do this?
       @bio.io.close if @sync_close
     end
   end

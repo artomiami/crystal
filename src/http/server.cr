@@ -312,6 +312,9 @@ class HTTP::Server
     # ```
     def bind_tls(host : String, port : Int32, context : OpenSSL::SSL::Context::Server, reuse_port : Bool = false) : Socket::IPAddress
       tcp_server = TCPServer.new(host, port, reuse_port: reuse_port)
+      STDERR.puts "using local read timeout"
+      tcp_server.read_timeout = 60.seconds 
+      tcp_server.write_timeout = 60.seconds 
       server = OpenSSL::SSL::Server.new(tcp_server, context)
 
       begin

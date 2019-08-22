@@ -100,7 +100,7 @@ module OpenSSL
     class Error < OpenSSL::Error
       getter error : ErrorType
 
-      def initialize(ssl : LibSSL::SSL, return_code : LibSSL::Int, func = nil)
+      def initialize(ssl : LibSSL::SSL, return_code : LibSSL::Int, func = nil) # func is a String name
         @error = LibSSL.ssl_get_error(ssl, return_code)
 
         case @error
