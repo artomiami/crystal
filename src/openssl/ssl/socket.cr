@@ -154,9 +154,11 @@ abstract class OpenSSL::SSL::Socket < IO
       loop do
         begin
           ret = LibSSL.ssl_shutdown(@ssl)
-          break if ret == 1
+          break if ret == 1 # success
+          STDERR.puts "ret == #{ret}"
           raise OpenSSL::SSL::Error.new(@ssl, ret, "SSL_shutdown") if ret < 0
-        rescue e : OpenSSL::SSL::Error
+        rescue e : OpenSSL::SSL::Error # won't enter this if ret == 0, only the < 0 we just threw, above...
+          STDERR.puts "e = #{e}"
           case e.error
           when .want_read?, .want_write?
             # Ignore, shutdown did not complete yet
