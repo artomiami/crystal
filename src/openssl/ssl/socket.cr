@@ -154,26 +154,31 @@ abstract class OpenSSL::SSL::Socket < IO
       loop do
         begin
           ret = LibSSL.ssl_shutdown(@ssl)
-          break if ret == 1 # success
-          STDERR.puts "ret == #{ret}"
-          raise OpenSSL::SSL::Error.new(@ssl, ret, "SSL_shutdown") if ret < 0
+          break if ret == 1 # success always
+          STDERR.puts "ret == #{ret}" # 0 means "half success, do it again! if it's blocking, and possibly non blocking too LOL"
+          raise OpenSSL::SSL::Error.new(@ssl, ret, "SSL_shutdown") if ret < 0 # if these are want_read then OK to loop...
         rescue e : OpenSSL::SSL::Error # won't enter this if ret == 0, only the < 0 we just threw, above...
           STDERR.puts "e = #{e}"
           case e.error
           when .want_read?, .want_write?
-            # Ignore, shutdown did not complete yet
+            # Ignore, shutdown did not complete yet assume this is ours freshly thrown...
           when .syscall?
             # OpenSSL claimed an underlying syscall failed, but that didn't set any error state,
             # assume we're done
+            # but we should only get this behavior is ret == 0 and we're not here anyway...
+            # so benign but should be nixed...after he fixes that unit test LOL
+            # overall, this should be good tho...
+            # so maybe what we're getting is one that wants_read? but...but...when you call read on it it's dead but that should already throw way way out...we'll see...
+            # so only change: remove this, maybe cleanup overall structure, assuming my one weird bug is really really done gone dead squashed by now LOL...
             break
           else
             raise e
           end
         end
 
-        # ret == 0, retry, shutdown is not complete yet
+        # ret == 0, or is want_read?, retry, shutdown is not complete yet
       end
-    rescue IO::Error
+    rescue IO::Error # swallow??? bit weird...maybe it's the pattern round these parts...
     ensure
       @bio.io.close if @sync_close
     end
