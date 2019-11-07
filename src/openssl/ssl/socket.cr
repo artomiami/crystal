@@ -115,7 +115,11 @@ abstract class OpenSSL::SSL::Socket < IO
 
     LibSSL.ssl_read(@ssl, slice.to_unsafe, count).tap do |bytes|
       if bytes <= 0 && !LibSSL.ssl_get_error(@ssl, bytes).zero_return?
-        raise OpenSSL::SSL::Error.new(@ssl, bytes, "SSL_read")
+        ex = OpenSSL::SSL::Error.new(@ssl, bytes, "SSL_read")
+        if ex.message && ex.message.not_nil!.includes?("Unexpected EOF")
+          return 0 # it's similar to an EOF, connection was closed without gracefully closing SSL #7383...
+        end
+        raise ex
       end
     end
   end
