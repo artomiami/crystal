@@ -159,6 +159,7 @@ abstract class OpenSSL::SSL::Socket < IO
         begin
           ret = LibSSL.ssl_shutdown(@ssl)
           break if ret == 1 # success always
+          break if ret == 0 && @sync_close # some client bugs
           STDERR.puts "ret == #{ret}" # 0 means "half success, do it again! if it's blocking, and possibly non blocking too LOL"
           raise OpenSSL::SSL::Error.new(@ssl, ret, "SSL_shutdown") if ret < 0 # if these are want_read then OK to loop...
         rescue e : OpenSSL::SSL::Error # won't enter this if ret == 0, only the < 0 we just threw, above...
