@@ -578,6 +578,11 @@ describe "Slice" do
         [1, 2].sort { nil }
       end
     end
+
+    it "sorts stably" do
+      a = (1..17).to_a
+      a.should eq(a.sort { 0 })
+    end
   end
 
   describe "sort!" do
