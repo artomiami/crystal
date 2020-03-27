@@ -579,10 +579,21 @@ describe "Slice" do
       end
     end
 
-    it "sorts stably" do
+    it "sorts ints unstably" do
       a = (1..17).to_a
-      a.should eq(a.sort { 0 })
+      a.should_not eq(a.sort { 0 })
     end
+
+    it "sorts Strings unstably" do
+      a = (1..17).to_a.map{|i| i.to_s}
+      a.should_not eq(a.sort { 0 })
+    end
+
+    it "sorts Objects stably" do
+      a = (1..17).to_a.map{|i| Spaceship.new(i.to_f)}
+      a.should eq(a.sort { 0 }) # should not change array order
+    end
+
   end
 
   describe "sort!" do

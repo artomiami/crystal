@@ -5,6 +5,10 @@ struct Slice(T)
     insertion_sort!(a, n)
   end
 
+  protected def self.merge_sort!(a, n)
+    return if n < 2
+  end
+
   protected def self.quick_sort_for_intro_sort!(a, n, d)
     while n > 16
       if d == 0
