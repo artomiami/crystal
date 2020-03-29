@@ -585,7 +585,7 @@ describe "Slice" do
     end
 
     it "sorts Strings unstably" do
-      a = (1..17).to_a.map{|i| i.to_s}
+      a = (1..17).to_a.map{ |i| i.to_s}
       a.should_not eq(a.sort { 0 })
     end
 

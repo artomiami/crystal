@@ -1752,8 +1752,8 @@ class Array(T)
   # a.sort # => [1, 2, 3]
   # a      # => [3, 1, 2]
   # ```
-  def sort : Array(T)
-    dup.sort!
+  def sort(unstable = type_primitive?) : Array(T)
+    dup.sort!(unstable)
   end
 
   # Returns a new array with all elements sorted based on the comparator in the
@@ -1770,12 +1770,12 @@ class Array(T)
   # b # => [3, 2, 1]
   # a # => [3, 1, 2]
   # ```
-  def sort(&block : T, T -> U) : Array(T) forall U
+  def sort(unstable = type_primitive?, &block : T, T -> U) : Array(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
 
-    dup.sort! &block
+    dup.sort!(unstable, &block)
   end
 
   # Modifies `self` by sorting all elements based on the return value of their
@@ -1786,8 +1786,8 @@ class Array(T)
   # a.sort!
   # a # => [1, 2, 3]
   # ```
-  def sort! : Array(T)
-    Slice.new(to_unsafe, size).sort!
+  def sort!(unstable = type_primitive?) : Array(T)
+    Slice.new(to_unsafe, size).sort!(unstable)
     self
   end
 
@@ -1804,12 +1804,12 @@ class Array(T)
   # a.sort! { |a, b| b <=> a }
   # a # => [3, 2, 1]
   # ```
-  def sort!(&block : T, T -> U) : Array(T) forall U
+  def sort!(unstable = type_primitive?, &block : T, T -> U) : Array(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
 
-    Slice.new(to_unsafe, size).sort!(&block)
+    Slice.new(to_unsafe, size).sort!(unstable, &block)
     self
   end
 
@@ -2082,6 +2082,10 @@ class Array(T)
 
   protected def to_lookup_hash
     to_lookup_hash { |elem| elem }
+  end
+
+  protected def type_primitive?
+    {{ T < Number || T == String }}
   end
 
   protected def to_lookup_hash(&block : T -> U) forall U

@@ -2,12 +2,9 @@ struct Slice(T)
   protected def self.intro_sort!(a, n)
     return if n < 2
     quick_sort_for_intro_sort!(a, n, Math.log2(n).to_i * 2)
-    insertion_sort!(a, n)
+    insertion_sort!(a, 0, n)
   end
 
-  protected def self.merge_sort!(a, n)
-    return if n < 2
-  end
 
   protected def self.quick_sort_for_intro_sort!(a, n, d)
     while n > 16
@@ -88,7 +85,8 @@ struct Slice(T)
     end
   end
 
-  protected def self.insertion_sort!(a, n)
+  protected def self.insertion_sort!(a, start, n) 
+    a += start
     (1...n).each do |i|
       l = a + i
       v = l.value
@@ -104,7 +102,7 @@ struct Slice(T)
   protected def self.intro_sort!(a, n, comp)
     return if n < 2
     quick_sort_for_intro_sort!(a, n, Math.log2(n).to_i * 2, comp)
-    insertion_sort!(a, n, comp)
+    insertion_sort!(a, 0, n, comp)
   end
 
   protected def self.quick_sort_for_intro_sort!(a, n, d, comp)
@@ -186,7 +184,8 @@ struct Slice(T)
     end
   end
 
-  protected def self.insertion_sort!(a, n, comp)
+  protected def self.insertion_sort!(a, start, n, comp)
+    a += start
     (1...n).each do |i|
       l = a + i
       v = l.value
