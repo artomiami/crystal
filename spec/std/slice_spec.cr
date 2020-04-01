@@ -579,24 +579,27 @@ describe "Slice" do
       end
     end
 
-    it "sorts ints unstably" do
+    it "ints with no block unstably" do
       a = (1..17).to_a
-      a.should_not eq(a.sort { 0 })
+      a.sort.should eq((1..17).to_a) # no way to assert whether it was stable or not...but should end up sorted
     end
 
-    it "sorts ints with block stably" do
-      # expect values that "map to 1" to be treated as equals and not re-arranged...
+    it "sort_by ints with block stably" do
+      # expect values that "map to 1" to be treated as equal and order retained...
       a = (1..17).to_a
       b = a.sort_by{|i| i.to_s.starts_with?("6") ? 0 : 1}
-      a.should eq(a.sort { 0 })
+      expected = (1..17).to_a
+      expected.reject!{|i| i == 6}
+      expected.unshift 6
+      b.should eq(expected)
     end
 
-    it "sorts Strings unstably" do
-      a = (1..17).to_a.map{ |i| i.to_s}
-      a.should_not eq(a.sort { 0 })
+    it "strings unstably" do
+      a = ["a"]*10 + ["b"]*10
+      a.sort.should eq(a) # no way to assert whether stable or not...
     end
 
-    it "sorts Objects stably" do
+    it "objects stably" do
       a = (1..17).to_a.map{|i| Spaceship.new(i.to_f)}
       a.should eq(a.sort { 0 }) # should not change array order
     end
