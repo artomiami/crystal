@@ -670,7 +670,8 @@ struct Slice(T)
   # a.sort!
   # a # => Slice[1, 2, 3]
   # ```
-  def sort!(unstable = type_primitive?) : Slice(T)
+  def sort!() : Slice(T)
+    unstable = true
     if (unstable)
       Slice.intro_sort!(to_unsafe, size)
     else
@@ -692,7 +693,8 @@ struct Slice(T)
   # a.sort! { |a, b| b <=> a }
   # a # => Slice[3, 2, 1]
   # ```
-  def sort!(unstable = false, &block : T, T -> U) : Slice(T) forall U
+  def sort!(&block : T, T -> U) : Slice(T) forall U
+    unstable = true
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
