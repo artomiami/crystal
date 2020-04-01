@@ -578,6 +578,29 @@ describe "Slice" do
         [1, 2].sort { nil }
       end
     end
+
+    it "sorts ints unstably" do
+      a = (1..17).to_a
+      a.should_not eq(a.sort { 0 })
+    end
+
+    it "sorts ints with block stably" do
+      # expect values that "map to 1" to be treated as equals and not re-arranged...
+      a = (1..17).to_a
+      b = a.sort_by{|i| i.to_s.starts_with?("6") ? 0 : 1}
+      a.should eq(a.sort { 0 })
+    end
+
+    it "sorts Strings unstably" do
+      a = (1..17).to_a.map{ |i| i.to_s}
+      a.should_not eq(a.sort { 0 })
+    end
+
+    it "sorts Objects stably" do
+      a = (1..17).to_a.map{|i| Spaceship.new(i.to_f)}
+      a.should eq(a.sort { 0 }) # should not change array order
+    end
+
   end
 
   describe "sort!" do
