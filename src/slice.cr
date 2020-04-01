@@ -654,7 +654,7 @@ struct Slice(T)
   # b # => Slice[3, 2, 1]
   # a # => Slice[3, 1, 2]
   # ```
-  def sort(unstable = type_primitive?, &block : T, T -> U) : Slice(T) forall U
+  def sort(unstable = false, &block : T, T -> U) : Slice(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
@@ -692,7 +692,7 @@ struct Slice(T)
   # a.sort! { |a, b| b <=> a }
   # a # => Slice[3, 2, 1]
   # ```
-  def sort!(unstable = type_primitive?, &block : T, T -> U) : Slice(T) forall U
+  def sort!(unstable = false, &block : T, T -> U) : Slice(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
@@ -714,7 +714,7 @@ struct Slice(T)
   # b # => Slice["fig", "pear", "apple"]
   # a # => Slice["apple", "pear", "fig"]
   # ```
-  def sort_by(unstable = type_primitive?, &block : T -> _) : Slice(T)
+  def sort_by(unstable = false, &block : T -> _) : Slice(T)
     dup.sort_by!(unstable) { |e| yield(e) }
   end
 
@@ -727,7 +727,7 @@ struct Slice(T)
   # a.sort_by! { |word| word.size }
   # a # => Slice["fig", "pear", "apple"]
   # ```
-  def sort_by!(unstable = type_primitive?, &block : T -> _) : Slice(T)
+  def sort_by!(unstable = false, &block : T -> _) : Slice(T)
     sorted = map { |e| {e, yield(e)} }.sort!(unstable) { |x, y| x[1] <=> y[1] }
     size.times do |i|
       to_unsafe[i] = sorted.to_unsafe[i][0]
