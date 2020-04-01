@@ -1,5 +1,6 @@
 require "c/string"
 require "slice/sort"
+require "slice/merge_sort"
 
 # A `Slice` is a `Pointer` with an associated size.
 #
@@ -669,8 +670,12 @@ struct Slice(T)
   # a.sort!
   # a # => Slice[1, 2, 3]
   # ```
-  def sort! : Slice(T)
-    Slice.intro_sort!(to_unsafe, size)
+  def sort!(unstable = type_primitive?) : Slice(T)
+    if (unstable)
+      Slice.intro_sort!(to_unsafe, size)
+    else
+      Slice.merge_sort!(to_unsafe, size)
+    end
     self
   end
 
@@ -687,12 +692,15 @@ struct Slice(T)
   # a.sort! { |a, b| b <=> a }
   # a # => Slice[3, 2, 1]
   # ```
-  def sort!(&block : T, T -> U) : Slice(T) forall U
+  def sort!(unstable = false, &block : T, T -> U) : Slice(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
-
-    Slice.intro_sort!(to_unsafe, size, block)
+    if (unstable)
+      Slice.intro_sort!(to_unsafe, size, block)
+    else
+      Slice.merge_sort!(to_unsafe, size, block)
+    end
     self
   end
 
@@ -762,6 +770,10 @@ struct Slice(T)
 
   protected def check_writable
     raise "Can't write to read-only Slice" if @read_only
+  end
+
+  protected def type_primitive?
+    {{ T < Number || T == String }}
   end
 
   private def check_size(count : Int)
