@@ -21,9 +21,10 @@ private class Spaceship
   end
 end
 
+# normally not a safe procedure for arrays whose size could later change...
 def to_slice(arr)
  Slice.new(arr.to_unsafe, arr.size)
-end 
+end
 
 describe "Slice" do
   it "gets pointer and size" do
@@ -590,7 +591,7 @@ describe "Slice" do
 
     it "sort_by ints with block stably" do
       # expect values that "map to 1" to be treated as equal and order retained...
-      a = (1..17).to_a
+      a = to_slice((1..17).to_a)
       sorted = a.sort_by{|i| i.to_s.starts_with?("6") ? 0 : 1}
       expected = (1..17).to_a
       expected.reject!{|i| i == 6}
@@ -599,12 +600,12 @@ describe "Slice" do
     end
 
     it "strings unstably" do
-      a = ["a"] * 10 + ["b"] * 10
+      a = to_slice(["a"] * 10 + ["b"] * 10)
       a.sort.should eq(a) # no way to assert whether stable or not...
     end
 
     it "objects stably" do
-      a = (1..17).to_a.map{|i| Spaceship.new(i.to_f)}
+      a = to_slice((1..17).to_a).map{|i| Spaceship.new(i.to_f)}
       a.sort { 0 }.should eq(a) # should not change array order
     end
 
