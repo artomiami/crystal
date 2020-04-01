@@ -21,6 +21,10 @@ private class Spaceship
   end
 end
 
+def to_slice(arr)
+ Slice.new(arr.to_unsafe, arr.size)
+end 
+
 describe "Slice" do
   it "gets pointer and size" do
     pointer = Pointer.malloc(1, 0)
@@ -580,28 +584,28 @@ describe "Slice" do
     end
 
     it "ints with no block unstably" do
-      a = (1..17).to_a
+      a = to_slice((1..17).to_a)
       a.sort.should eq((1..17).to_a) # no way to assert whether it was stable or not...but should end up sorted
     end
 
     it "sort_by ints with block stably" do
       # expect values that "map to 1" to be treated as equal and order retained...
       a = (1..17).to_a
-      b = a.sort_by{|i| i.to_s.starts_with?("6") ? 0 : 1}
+      sorted = a.sort_by{|i| i.to_s.starts_with?("6") ? 0 : 1}
       expected = (1..17).to_a
       expected.reject!{|i| i == 6}
       expected.unshift 6
-      b.should eq(expected)
+      sorted.should eq(expected)
     end
 
     it "strings unstably" do
-      a = ["a"]*10 + ["b"]*10
+      a = ["a"] * 10 + ["b"] * 10
       a.sort.should eq(a) # no way to assert whether stable or not...
     end
 
     it "objects stably" do
       a = (1..17).to_a.map{|i| Spaceship.new(i.to_f)}
-      a.should eq(a.sort { 0 }) # should not change array order
+      a.sort { 0 }.should eq(a) # should not change array order
     end
 
   end
