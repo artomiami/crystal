@@ -1434,6 +1434,46 @@ describe "Array" do
       b.should eq([{"a", 1}, {"b", 2}, {"c", 3}, {"d", 4}, {"e", 5}])
       a.should_not eq(b)
     end
+
+    it "sorts by with block returning ints stably" do
+      # we special case default "sorting by ints" for #sort to unstable, but want stable default for sort_by
+      a = (1..17).to_a
+      sorted = a.sort_by{|i| i == 6 ? 0 : 1}
+      expected = (1..17).to_a
+      expected.reject!{|i| i == 6}
+      expected.unshift 6 # should be at beginning now, those following stay in order
+      sorted.should eq(expected)
+    end
+
+    it "sorts by ints with block stably" do
+      a = (1..17).to_a
+      a.sort_by{ 0 }.should eq(a) # no way to assert whether it was stable or not...should end up sorted either way
+    end
+
+    it "sorts by ints with block unstably optionally" do
+      a = (1..17).to_a
+      a.sort_by(stable: false){ 0 }.should_not eq(a)
+    end
+
+    it "sorts by objects with block stably by default" do
+      a = (1..17).to_a.map{Spaceship.new(0.0)}
+      a.sort_by{ 0 }.should eq(a)
+    end
+
+    it "sorts by objects with block unstably optionally" do
+      a = (1..17).to_a.map{Spaceship.new(0.0)}
+      a.sort_by(stable: false){ 0 }.should_not eq(a) # implementation detail but sorted out of order
+    end
+
+    it "sorts by objects with block returning object stably by default" do
+      a = (1..17).to_a.map{ |i| Spaceship.new(i.to_f)}
+      a.sort_by{ |spaceship| spaceship }.should eq(a)
+    end
+
+    it "sorts by objects with block returning object unstably optionally" do
+      a = (1..17).to_a.map{ |i| Spaceship.new(i.to_f)}
+      a.sort_by(stable: false){ |spaceship| spaceship }.should eq(a)
+    end
   end
 
   describe "sort_by!" do
@@ -1448,6 +1488,52 @@ describe "Array" do
       a = ["foo", "a", "hello"]
       a.sort_by! { |e| calls[e] += 1; e.size }
       calls.should eq({"foo" => 1, "a" => 1, "hello" => 1})
+    end
+
+    it "sorts by! with block returning ints stably" do
+      # we special case default "sorting by ints" for #sort to unstable, but want stable default for sort_by
+      a = (1..17).to_a
+      a.sort_by!{|i| i == 6 ? 0 : 1}
+      expected = (1..17).to_a
+      expected.reject!{|i| i == 6}
+      expected.unshift 6 # should be at beginning now, those following stay in order
+      a.should eq(expected)
+    end
+
+    it "sorts by! ints with block stably" do
+      a = (1..17).to_a
+      original = a.dup
+      a.sort_by!{ 0 }.should eq(original) # no way to assert whether it was stable or not...should end up sorted either way
+    end
+
+    it "sorts by! ints with block unstably optionally" do
+      a = (1..17).to_a
+      original = a.dup
+      a.sort_by!(stable: false){ 0 }.should_not eq(original)
+    end
+
+    it "sorts by! objects with block stably by default" do
+      a = (1..17).to_a.map{Spaceship.new(0.0)}
+      original = a.dup
+      a.sort_by!{ 0 }.should eq(original)
+    end
+
+    it "sorts by! objects with block unstably optionally" do
+      a = (1..17).to_a.map{Spaceship.new(0.0)}
+      original = a.dup
+      a.sort_by!(stable: false){ 0 }.should_not eq(original) # implementation detail but sorted out of order
+    end
+
+    it "sorts by objects with block returning object stably by default" do
+      a = (1..17).to_a.map{ |i| Spaceship.new(i.to_f)}
+      original = a.dup
+      a.sort_by!{ |spaceship| spaceship }.should eq(original)
+    end
+
+    it "sorts by! objects with block returning object unstably optionally" do
+      a = (1..17).to_a.map{ |i| Spaceship.new(i.to_f)}
+      original = a.dup
+      a.sort_by!(stable: false){ |spaceship| spaceship }.should eq(original)
     end
   end
 
