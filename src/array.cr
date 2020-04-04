@@ -1752,8 +1752,8 @@ class Array(T)
   # a.sort # => [1, 2, 3]
   # a      # => [3, 1, 2]
   # ```
-  def sort : Array(T)
-    dup.sort!
+  def sort(stable = !equals_are_identical?) : Array(T)
+    dup.sort!(stable)
   end
 
   # Returns a new array with all elements sorted based on the comparator in the
@@ -1770,12 +1770,12 @@ class Array(T)
   # b # => [3, 2, 1]
   # a # => [3, 1, 2]
   # ```
-  def sort(&block : T, T -> U) : Array(T) forall U
+  def sort(stable = true, &block : T, T -> U) : Array(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
 
-    dup.sort! &block
+    dup.sort!(stable, &block)
   end
 
   # Modifies `self` by sorting all elements based on the return value of their
@@ -1786,8 +1786,8 @@ class Array(T)
   # a.sort!
   # a # => [1, 2, 3]
   # ```
-  def sort! : Array(T)
-    Slice.new(to_unsafe, size).sort!
+  def sort!(stable = false) : Array(T)
+    Slice.new(to_unsafe, size).sort!(stable)
     self
   end
 
@@ -1804,12 +1804,12 @@ class Array(T)
   # a.sort! { |a, b| b <=> a }
   # a # => [3, 2, 1]
   # ```
-  def sort!(&block : T, T -> U) : Array(T) forall U
+  def sort!(stable = false, &block : T, T -> U) : Array(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
 
-    Slice.new(to_unsafe, size).sort!(&block)
+    Slice.new(to_unsafe, size).sort!(stable, &block)
     self
   end
 
@@ -2065,6 +2065,10 @@ class Array(T)
 
   private def check_needs_resize
     double_capacity if @size == @capacity
+  end
+
+  private def equals_are_identical?
+    {{ T < Number }} # TODO String etc.
   end
 
   private def double_capacity
