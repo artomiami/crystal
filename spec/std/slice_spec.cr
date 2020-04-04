@@ -610,13 +610,13 @@ describe "Slice" do
     #end
 
     it "objects stably" do
-      a = to_slice((1..17).to_a).map{|i| Spaceship.new(i.to_f)}
+      a = to_slice((1..17).to_a.map{|i| Spaceship.new(i.to_f)})
       a.sort.should eq(a) # should not change array order
     end
 
     it "objects unstably optionally" do
       puts "begin bad"
-      a = to_slice((1..133).to_a).map{|i| Spaceship.new(i.to_f)}
+      a = to_slice((1..133).to_a.map{|i| Spaceship.new(i.to_f)})
       a.sort(stable: false).should_not eq(a) # implementation detail but no longer in order
     end
   end
