@@ -1346,6 +1346,78 @@ describe "Array" do
         [1, 2].sort! { nil }
       end
     end
+
+    it "sort! ints with no block unstably" do
+      a = (1..17).to_a
+      original = a.dup
+      a.sort!.should eq(original) # no way to assert whether it was stable or not...should end up sorted either way
+    end
+ 
+    it "sort! ints with no block stably optionally" do
+      a = (1..17).to_a
+      original = a.dup
+      a.sort!(stable: true).should eq(original) # ditto
+    end
+ 
+    it "sort! floats with no block unstably" do
+      a = (1..17).to_a.map &.to_f
+      original = a.dup
+      a.sort!.should eq(original) # ditto
+    end
+ 
+    it "sort! floats with no block stably optionally" do
+      a = (1..17).to_a.map &.to_f
+      original = a.dup
+      a.sort!(stable: true).should eq(original) # ditto
+    end
+ 
+    it "sort! objects with no block stably by default" do
+      a = (1..17).to_a.map{Spaceship.new(0.0)}
+      original = a.dup
+      a.sort!.should eq(original)
+    end
+ 
+    it "sort! objects with no block unstably optionally" do
+      a = (1..177).to_a.map{Spaceship.new(0.0)}
+      original = a.dup
+      a.sort!(stable: false).should_not eq(original) # unstable -> out of order
+    end
+ 
+    it "sort! ints with block stably" do
+      a = (1..17).to_a
+      original = a.dup
+      a.sort!{ 0 }.should eq(original)
+    end
+ 
+    it "sort! ints with block unstably optionally" do
+      a = (1..17).to_a
+      original = a.dup
+      a.sort!(stable: false){ 0 }.should_not eq(original)
+    end
+ 
+    it "sort! floats with block stably" do
+      a = (1..17).to_a.map &.to_f
+      original = a.dup
+      a.sort!{ 0 }.should eq(original)
+    end
+ 
+    it "sort! floats with block unstably optionally" do
+      a = (1..17).to_a.map &.to_f
+      original = a.dup
+      a.sort!(stable: false){ 0 }.should_not eq(original)
+    end
+ 
+    it "sort! objects with block stably by default" do
+      a = (1..17).to_a.map{Spaceship.new(0.0)}
+      original = a.dup
+      a.sort!{ 0 }.should eq(original)
+    end
+ 
+    it "sort! objects with block unstably optionally" do
+      a = (1..17).to_a.map{Spaceship.new(0.0)}
+      original = a.dup
+      a.sort!(stable: false){ 0 }.should_not eq(original) # implementation detail but sorted out of order
+    end
   end
 
   describe "sort_by" do

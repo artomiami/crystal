@@ -1786,7 +1786,7 @@ class Array(T)
   # a.sort!
   # a # => [1, 2, 3]
   # ```
-  def sort!(stable = false) : Array(T)
+  def sort!(stable = !equals_are_identical?) : Array(T)
     Slice.new(to_unsafe, size).sort!(stable)
     self
   end
@@ -1804,7 +1804,7 @@ class Array(T)
   # a.sort! { |a, b| b <=> a }
   # a # => [3, 2, 1]
   # ```
-  def sort!(stable = false, &block : T, T -> U) : Array(T) forall U
+  def sort!(stable = true, &block : T, T -> U) : Array(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}

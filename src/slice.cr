@@ -670,7 +670,7 @@ struct Slice(T)
   # a.sort!
   # a # => Slice[1, 2, 3]
   # ```
-  def sort!(stable = true) : Slice(T)
+  def sort!(stable = equals_are_identical?) : Slice(T)
     if (stable)
       puts "doing stable"
       Slice.merge_sort!(to_unsafe, size)
