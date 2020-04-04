@@ -1746,6 +1746,9 @@ class Array(T)
 
   # Returns a new array with all elements sorted based on the return value of
   # their comparison method `#<=>`
+  # If *stable* is true performs a stable sort (default).  For primitive types
+  # where instances are interchangeable performs an unstable (faster
+  # sort by default.
   #
   # ```
   # a = [3, 1, 2]
