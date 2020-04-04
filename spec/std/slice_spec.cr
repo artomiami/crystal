@@ -585,13 +585,18 @@ describe "Slice" do
     end
 
     it "sorts ints with no block unstably" do
-      a = to_slice((1..17).to_a)
-      a.sort.should eq(to_slice((1..17).to_a)) # no way to assert whether it was stable or not...should end up sorted
+      a = to_slice((1..177).to_a)
+      a.sort.should eq(a) # no way to assert whether it was stable or not...should end up sorted at least
+    end
+
+    it "sorts ints with no block stably optionally" do
+      a = to_slice((1..177).to_a)
+      a.sort(stable: true).should eq(a) # no way to assert whether it was stable or not...should end up sorted at least
     end
 
     it "sorts floats with no block unstably" do
-      a = to_slice((1..17).to_a.map &.to_f)
-      a.sort.should eq(to_slice((1..17).to_a)) # no way to assert whether it was stable or not...should end up sorted
+      a = to_slice((1..177).to_a.map &.to_f)
+      a.sort.should eq(a) # no way to assert whether it was stable or not...should end up sorted
     end
 
     it "sort_by ints with block stably" do #TODO
@@ -600,24 +605,18 @@ describe "Slice" do
       sorted = a.sort_by{|i| i.to_s.starts_with?("6") ? 0 : 1}
       expected = (1..17).to_a
       expected.reject!{|i| i == 6}
-      expected.unshift 6
+      expected.unshift 6 # should be at beginning now, following in order
       sorted.should eq(expected)
     end
 
-    #it "strings unstably" do # no Strings yet...
-    #  a = to_slice(["a"] * 10 + ["b"] * 10)
-    #  a.sort.should eq(a) # no way to assert whether stable or not...
-    #end
-
-    it "objects stably" do
-      a = to_slice((1..17).to_a.map{|i| Spaceship.new(i.to_f)})
-      a.sort.should eq(a) # should not change array order
+    it "sorts objects stably by default" do
+      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a.sort.should eq(a) 
     end
 
     it "objects unstably optionally" do
-      puts "begin bad"
-      a = to_slice((1..133).to_a.map{|i| Spaceship.new(i.to_f)})
-      a.sort(stable: false).should_not eq(a) # implementation detail but no longer in order
+      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a.sort(stable: false).should_not eq(a) # implementation detail but sorted out of order
     end
   end
 
