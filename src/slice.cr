@@ -716,8 +716,8 @@ struct Slice(T)
   # b # => Slice["fig", "pear", "apple"]
   # a # => Slice["apple", "pear", "fig"]
   # ```
-  def sort_by(&block : T -> _) : Slice(T)
-    dup.sort_by! { |e| yield(e) }
+  def sort_by(stable = true, &block : T -> _) : Slice(T)
+    dup.sort_by!(stable) { |e| yield(e) }
   end
 
   # Modifies `self` by sorting all elements. The given block is called for
@@ -729,8 +729,8 @@ struct Slice(T)
   # a.sort_by! { |word| word.size }
   # a # => Slice["fig", "pear", "apple"]
   # ```
-  def sort_by!(&block : T -> _) : Slice(T)
-    sorted = map { |e| {e, yield(e)} }.sort! { |x, y| x[1] <=> y[1] }
+  def sort_by!(stable = false, &block : T -> _) : Slice(T)
+    sorted = map { |e| {e, yield(e)} }.sort!(stable) { |x, y| x[1] <=> y[1] }
     size.times do |i|
       to_unsafe[i] = sorted.to_unsafe[i][0]
     end
