@@ -591,28 +591,27 @@ describe "Slice" do
 
     it "sorts ints with no block stably optionally" do
       a = to_slice((1..17).to_a)
-      a.sort(stable: true).should eq(a) # no way to assert whether it was stable or not...should end up sorted either way
+      a.sort(stable: true).should eq(a) # ditto
     end
 
     it "sorts floats with no block unstably" do
       a = to_slice((1..17).to_a.map &.to_f)
-      a.sort.should eq(a) # no way to assert whether it was stable or not...should end up sorted either way
+      a.sort.should eq(a) # ditto
     end
 
     it "sorts floats with no block stably optionally" do
       a = to_slice((1..17).to_a.map &.to_f)
-      a.sort(stable: true).should eq(a) # no way to assert whether it was stable or not...should end up sorted either way
+      a.sort(stable: true).should eq(a) # ditto
     end
 
     it "sorts objects with no block stably by default" do
       a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
-      puts "BEGIN BAD"
       a.sort.should eq(a) 
     end
 
     it "sorts objects with no block unstably optionally" do
       a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
-      a.sort(stable: false).should_not eq(a) # sorted out of order
+      a.sort(stable: false).should_not eq(a) # out of order
     end
 
     it "sorts ints with block stably" do
@@ -699,21 +698,54 @@ describe "Slice" do
   end
 
   describe "sort_by" do
-    it "sort_by ints with block stably" do #TODO
-      # expect values that "map to 1" to be treated as equal and order retained...
-      a = to_slice((1..17).to_a)
-      sorted = a.sort_by{|i| i.to_s.starts_with?("6") ? 0 : 1}
-      expected = (1..17).to_a
-      expected.reject!{|i| i == 6}
-      expected.unshift 6 # should be at beginning now, following in order
-      sorted.should eq(expected)
-    end
+
     it "sorts by" do
       a = Slice["foo", "a", "hello"]
       b = a.sort_by &.size
       b.to_a.should eq(["a", "foo", "hello"])
       a.should_not eq(b)
     end
+
+    it "sort_by with block returning ints stably" do
+      # we special case "sorting by ints" for #sort, but always want stable default for sort_by
+      a = to_slice((1..17).to_a)
+      sorted = a.sort_by{|i| i == 6 ? 0 : 1}
+      expected = (1..17).to_a
+      expected.reject!{|i| i == 6}
+      expected.unshift 6 # should be at beginning now, those following stay in order
+      sorted.should eq(to_slice(expected))
+    end
+
+    it "sort_by ints with block stably" do
+      a = to_slice((1..17).to_a)
+      a.sort_by{ 0 }.should eq(a) # no way to assert whether it was stable or not...should end up sorted either way
+    end
+
+    it "sort_by ints with block unstably optionally" do
+      a = to_slice((1..17).to_a)
+      a.sort_by(stable: false){ 0 }.should_not eq(a)
+    end
+
+    it "sort_by objects with block stably by default" do
+      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a.sort_by{ 0 }.should eq(a) 
+    end
+
+    it "sort_by objects with block unstably optionally" do
+      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a.sort_by(stable: false){ 0 }.should_not eq(a) # implementation detail but sorted out of order
+    end
+
+    it "sort_by objects with block returning object stably by default" do
+      a = to_slice((1..17).to_a.map{ |i| Spaceship.new(i.to_f)})
+      a.sort_by{ |spaceship| spaceship }.should eq(a) 
+    end
+
+    it "sort_by objects with block returning object unstably optionally" do
+      a = to_slice((1..17).to_a.map{ |i| Spaceship.new(i.to_f)})
+      a.sort_by(stable: false){ |spaceship| spaceship }.should eq(a) 
+    end
+
   end
 
   describe "sort_by!" do
