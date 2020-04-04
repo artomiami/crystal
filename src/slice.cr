@@ -636,7 +636,7 @@ struct Slice(T)
   # a.sort # => Slice[1, 2, 3]
   # a      # => Slice[3, 1, 2]
   # ```
-  def sort(stable = !type_equal_identity?) : Slice(T)
+  def sort(stable = !type_interchangeable?) : Slice(T)
     dup.sort!(stable)
   end
 
@@ -654,12 +654,12 @@ struct Slice(T)
   # b # => Slice[3, 2, 1]
   # a # => Slice[3, 1, 2]
   # ```
-  def sort(&block : T, T -> U) : Slice(T) forall U
+  def sort(stable = true, &block : T, T -> U) : Slice(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
 
-    dup.sort! &block
+    dup.sort!(stable, &block)
   end
 
   # Modifies `self` by sorting all elements based on the return value of their
@@ -694,15 +694,14 @@ struct Slice(T)
   # a.sort! { |a, b| b <=> a }
   # a # => Slice[3, 2, 1]
   # ```
-  def sort!(&block : T, T -> U) : Slice(T) forall U
-    unstable = true
+  def sort!(stable = false, &block : T, T -> U) : Slice(T) forall U # TODO
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
-    if (unstable)
-      Slice.intro_sort!(to_unsafe, size, block)
-    else
+    if (stable)
       Slice.merge_sort!(to_unsafe, size, block)
+    else
+      Slice.intro_sort!(to_unsafe, size, block)
     end
     self
   end
@@ -775,7 +774,7 @@ struct Slice(T)
     raise "Can't write to read-only Slice" if @read_only
   end
 
-  private def type_equal_identity?
+  private def type_interchangeable?
     {{ T < Number }} # TODO String etc.
   end
 
