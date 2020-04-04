@@ -636,8 +636,8 @@ struct Slice(T)
   # a.sort # => Slice[1, 2, 3]
   # a      # => Slice[3, 1, 2]
   # ```
-  def sort : Slice(T)
-    dup.sort!
+  def sort(stable = !type_equal_identity?) : Slice(T)
+    dup.sort!(stable)
   end
 
   # Returns a new slice with all elements sorted based on the comparator in the
@@ -670,12 +670,13 @@ struct Slice(T)
   # a.sort!
   # a # => Slice[1, 2, 3]
   # ```
-  def sort!() : Slice(T)
-    unstable = true
-    if (unstable)
-      Slice.intro_sort!(to_unsafe, size)
-    else
+  def sort!(stable = true) : Slice(T)
+    if (stable)
+      puts "doing stable"
       Slice.merge_sort!(to_unsafe, size)
+    else
+      puts "doing unstable"
+      Slice.intro_sort!(to_unsafe, size)
     end
     self
   end
@@ -774,8 +775,8 @@ struct Slice(T)
     raise "Can't write to read-only Slice" if @read_only
   end
 
-  protected def type_primitive?
-    {{ T < Number || T == String }}
+  private def type_equal_identity?
+    {{ T < Number }} # TODO String etc.
   end
 
   private def check_size(count : Int)
