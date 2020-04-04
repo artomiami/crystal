@@ -636,7 +636,7 @@ struct Slice(T)
   # a.sort # => Slice[1, 2, 3]
   # a      # => Slice[3, 1, 2]
   # ```
-  def sort(stable = !type_interchangeable?) : Slice(T)
+  def sort(stable = !equals_are_identical?) : Slice(T)
     dup.sort!(stable)
   end
 
@@ -774,7 +774,7 @@ struct Slice(T)
     raise "Can't write to read-only Slice" if @read_only
   end
 
-  private def type_interchangeable?
+  private def equals_are_identical?
     {{ T < Number }} # TODO String etc.
   end
 
