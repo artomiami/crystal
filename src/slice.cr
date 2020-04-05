@@ -673,6 +673,12 @@ struct Slice(T)
   # where `a < b` returns `-1`, `a == b` returns `0`, and `a > b` returns `1`.
   # The comparison operator `<=>` can be used for this.
   #
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # Default is `true`.  See `#sort` for description.
+  #
   # ```
   # a = Slice[3, 1, 2]
   # b = a.sort { |a, b| b <=> a }
@@ -690,6 +696,14 @@ struct Slice(T)
 
   # Modifies `self` by sorting all elements based on the return value of their
   # comparison method `<=>`
+  #
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
+  # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
+  # For everything else, stable sort is the default.  See `#sort` for description.
   #
   # ```
   # a = Slice[3, 1, 2]
@@ -715,6 +729,12 @@ struct Slice(T)
   # and `a > b` returns `1`.
   # The comparison operator `<=>` can be used for this.
   #
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # Default is `true`.  See `#sort` for description.
+  #
   # ```
   # a = Slice[3, 1, 2]
   # a.sort! { |a, b| b <=> a }
@@ -736,6 +756,12 @@ struct Slice(T)
   # each element, then the comparison method `<=>` is called on the object
   # returned from the block to determine sort order.
   #
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # Default is `true`.  See `#sort` for description.
+  #
   # ```
   # a = Slice["apple", "pear", "fig"]
   # b = a.sort_by { |word| word.size }
@@ -749,6 +775,12 @@ struct Slice(T)
   # Modifies `self` by sorting all elements. The given block is called for
   # each element, then the comparison method `<=>` is called on the object
   # returned from the block to determine sort order.
+  #
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # Default is `true`.  See `#sort` for description.
   #
   # ```
   # a = Slice["apple", "pear", "fig"]
