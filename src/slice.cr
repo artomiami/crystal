@@ -631,10 +631,36 @@ struct Slice(T)
   # Returns a new slice with all elements sorted based on the return value of
   # their comparison method `<=>`
   #
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
+  # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
+  # For everything else, stable sort is the default. 
+  #
   # ```
   # a = Slice[3, 1, 2]
   # a.sort # => Slice[1, 2, 3]
   # a      # => Slice[3, 1, 2]
+  #
+  # class MyClass
+  #   property val : Int32
+  #   def initialize(@val)
+  #   end
+  #   def <=>(other)
+  #     self.val <=> other.val
+  #   end
+  # end
+  #
+  # b = MyClass.new(1)
+  # c = MyClass.new(1)
+  # [b, c].sort # => [b, c] order is preserved by default, since b and c are equal
+  # [b, c].sort(stable = false) # => [?, ?] order may change
+  # d = MyClass.new(0)
+  # e = MyClass.new(2)
+  # [b,c,d,e].sort # => [d, b, c, e] order is preserved
+  # [b,c,d,e].sort(stable = false) # => [d, ?, ?, e] order of unequals is preserved, but for equals may change
   # ```
   def sort(stable = elements_have_identity?) : Slice(T)
     dup.sort!(stable)
