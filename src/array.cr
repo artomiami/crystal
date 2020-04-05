@@ -27,7 +27,7 @@
 # and is reallocated when elements are pushed to it when more capacity
 # is needed. This is normally known as a [dynamic array](http://en.wikipedia.org/wiki/Dynamic_array).
 #
-# You can use a special array literal syntax with everything else too, as long as they define an argless
+# You can use a special array literal syntax with other types too, as long as they define an argless
 # `new` method and a `<<` method. `Set` is one such type:
 #
 # ```
