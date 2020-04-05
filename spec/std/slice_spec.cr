@@ -23,7 +23,7 @@ end
 
 # normally not a safe procedure for arrays whose size could change but useful for this test...
 def to_slice(arr)
-  Slice.new(arr.to_unsafe, arr.size)
+  Slice.new(arr.size) {|i| arr[i]}
 end
 
 describe "Slice" do
