@@ -640,7 +640,7 @@ describe "Slice" do
 
     it "sorts objects with block unstably optionally" do
       a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
-      a.sort(stable: false) { 0 }.should_not eq(a) # implementation detail but sorted out of order
+      a.sort(stable: false) { 0 }.should_not eq(a) # implementation detail but sorts out of order
     end
   end
 
@@ -763,7 +763,7 @@ describe "Slice" do
     it "sort! objects with block unstably optionally" do
       a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
       original = a.dup
-      a.sort!(stable: false) { 0 }.should_not eq(original) # implementation detail but sorted out of order
+      a.sort!(stable: false) { 0 }.should_not eq(original) # implementation detail but sorts out of order
     end
   end
 
@@ -802,7 +802,7 @@ describe "Slice" do
 
     it "sorts by objects with block unstably optionally" do
       a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
-      a.sort_by(stable: false) { 0 }.should_not eq(a) # implementation detail but sorted out of order
+      a.sort_by(stable: false) { 0 }.should_not eq(a) # implementation detail but sorts out of order
     end
 
     it "sorts by objects with block returning object stably by default" do
@@ -861,7 +861,7 @@ describe "Slice" do
     it "sorts by! objects with block unstably optionally" do
       a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
       original = a.dup
-      a.sort_by!(stable: false) { 0 }.should_not eq(original) # implementation detail but sorted out of order
+      a.sort_by!(stable: false) { 0 }.should_not eq(original) # implementation detail but sorts out of order
     end
 
     it "sorts by objects with block returning object stably by default" do
