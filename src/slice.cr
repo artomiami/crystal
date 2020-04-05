@@ -637,7 +637,7 @@ struct Slice(T)
   # (faster, uses less memory).
   # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
   # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
-  # For everything else, stable sort is the default. 
+  # For everything else, stable sort is the default.
   #
   # ```
   # a = Slice[3, 1, 2]
@@ -646,8 +646,10 @@ struct Slice(T)
   #
   # class MyClass
   #   property val : Int32
+  #
   #   def initialize(@val)
   #   end
+  #
   #   def <=>(other)
   #     self.val <=> other.val
   #   end
@@ -655,12 +657,12 @@ struct Slice(T)
   #
   # b = MyClass.new(1)
   # c = MyClass.new(1)
-  # [b, c].sort # => [b, c] relative order is preserved by default, since b and c are equal
+  # [b, c].sort                 # => [b, c] relative order is preserved by default, since b and c are equal
   # [b, c].sort(stable = false) # => [?, ?] relative order may change
   # d = MyClass.new(0)
   # e = MyClass.new(2)
-  # [b,c,d,e].sort # => [d, b, c, e] relative order is preserved
-  # [b,c,d,e].sort(stable = false) # => [d, ?, ?, e] order of unequals is respected, but relative order for equals may change
+  # [b, c, d, e].sort                 # => [d, b, c, e] relative order is preserved
+  # [b, c, d, e].sort(stable = false) # => [d, ?, ?, e] order of unequals is respected, but relative order for equals may change
   # ```
   def sort(stable = elements_have_identity?) : Slice(T)
     dup.sort!(stable)
@@ -740,7 +742,7 @@ struct Slice(T)
   # a.sort! { |a, b| b <=> a }
   # a # => Slice[3, 2, 1]
   # ```
-  def sort!(stable = true, &block : T, T -> U) : Slice(T) forall U 
+  def sort!(stable = true, &block : T, T -> U) : Slice(T) forall U
     {% unless U <= Int32? %}
       {% raise "expected block to return Int32 or Nil, not #{U}" %}
     {% end %}
