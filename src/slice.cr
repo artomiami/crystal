@@ -655,12 +655,12 @@ struct Slice(T)
   #
   # b = MyClass.new(1)
   # c = MyClass.new(1)
-  # [b, c].sort # => [b, c] order is preserved by default, since b and c are equal
-  # [b, c].sort(stable = false) # => [?, ?] order may change
+  # [b, c].sort # => [b, c] relative order is preserved by default, since b and c are equal
+  # [b, c].sort(stable = false) # => [?, ?] relative order may change
   # d = MyClass.new(0)
   # e = MyClass.new(2)
-  # [b,c,d,e].sort # => [d, b, c, e] order is preserved
-  # [b,c,d,e].sort(stable = false) # => [d, ?, ?, e] order of unequals is preserved, but for equals may change
+  # [b,c,d,e].sort # => [d, b, c, e] relative order is preserved
+  # [b,c,d,e].sort(stable = false) # => [d, ?, ?, e] order of unequals is respected, but relative order for equals may change
   # ```
   def sort(stable = elements_have_identity?) : Slice(T)
     dup.sort!(stable)
