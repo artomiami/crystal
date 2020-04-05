@@ -27,7 +27,7 @@
 # and is reallocated when elements are pushed to it when more capacity
 # is needed. This is normally known as a [dynamic array](http://en.wikipedia.org/wiki/Dynamic_array).
 #
-# You can use a special array literal syntax with other types too, as long as they define an argless
+# You can use a special array literal syntax with everything else too, as long as they define an argless
 # `new` method and a `<<` method. `Set` is one such type:
 #
 # ```
@@ -1751,9 +1751,9 @@ class Array(T)
   # (slower, uses more RAM).  
   # If *stable* is false, performs an unstable sort 
   # (faster, but can rearrange order of equal elements).
-  # For elements where being equal means interchangeable (Primitives), unstable sort is the default
-  # (since identity isn't distinguishable, uses faster method by default).
-  # For other types, stable sort is the default.
+  # For elements where being equal means interchangeable (Primitives, Strings), unstable sort is the default
+  # (since identity isn't distinguishable, relative order doesn't matter, it uses faster method by default).
+  # For everything else, stable sort is the default.
   #
   # ```
   # a = [3, 1, 2]
@@ -1761,7 +1761,7 @@ class Array(T)
   # a      # => [3, 1, 2]
   #
   # class MyClass
-  #   property val : Float64
+  #   property val : Int32
   #   def initialize(@val)
   #   end
   #   def <=>(other)
@@ -1769,12 +1769,12 @@ class Array(T)
   #   end
   # end
   #
-  # b = MyClass.new(1.0)
-  # c = MyClass.new(1.0)
-  # [b, c].sort # => [b, c] order is preserved as b and c are equal
-  # [b, c].sort(stable = false) # => [?, ?] order of equals may change
-  # d = MyClass.new(0.0)
-  # e = MyClass.new(2.0)
+  # b = MyClass.new(1)
+  # c = MyClass.new(1)
+  # [b, c].sort # => [b, c] order is preserved by default, since b and c are equal
+  # [b, c].sort(stable = false) # => [?, ?] order may change
+  # d = MyClass.new(0)
+  # e = MyClass.new(2)
   # [b,c,d,e].sort # => [d, b, c, e] order is preserved
   # [b,c,d,e].sort(stable = false) # => [d, ?, ?, e] order of unequals is preserved, but for equals may change
   # ```
@@ -1793,7 +1793,7 @@ class Array(T)
   # (slower, uses more RAM).
   # If *stable* is false, performs an unstable sort 
   # (faster, but can rearrange order of equal elements).
-  # Default is true.  See `#sort` for examples.
+  # Default is true.  See `#sort` for description.
   #
   # ```
   # a = [3, 1, 2]
@@ -1817,9 +1817,9 @@ class Array(T)
   # (slower, uses more RAM).  
   # If *stable* is false, performs an unstable sort 
   # (faster, but can rearrange order of equal elements).
-  # For elements where being equal means interchangeable (Primitives), unstable sort is the default
-  # (since identity isn't distinguishable, it uses faster method by default).
-  # For other types, stable sort is the default.  See `#sort` for examples.
+  # For elements where being equal means interchangeable (Primitives, Strings), unstable sort is the default
+  # (since identity isn't distinguishable, relative order doesn't matter, it uses faster method by default).
+  # For everything else, stable sort is the default.  See `#sort` for description.
   #
   # ```
   # a = [3, 1, 2]
@@ -1843,7 +1843,7 @@ class Array(T)
   # (slower, uses more RAM).
   # If *stable* is false, performs an unstable sort 
   # (faster, but can rearrange order of equal elements).
-  # Default is true.  See `#sort` for examples.
+  # Default is true.  See `#sort` for description.
   #
   # ```
   # a = [3, 1, 2]
@@ -1867,7 +1867,7 @@ class Array(T)
   # (slower, uses more RAM).
   # If *stable* is false, performs an unstable sort 
   # (faster, but can rearrange order of equal elements).
-  # Default is true.  See `#sort` for examples.
+  # Default is true.  See `#sort` for description.
   #
   # ```
   # a = %w(apple pear fig)
@@ -1887,7 +1887,7 @@ class Array(T)
   # (slower, uses more RAM).
   # If *stable* is false, performs an unstable sort 
   # (faster, but can rearrange order of equal elements).
-  # Default is true.  See `#sort` for examples.
+  # Default is true.  See `#sort` for description.
   #
   # ```
   # a = %w(apple pear fig)
