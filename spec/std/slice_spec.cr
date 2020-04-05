@@ -22,7 +22,7 @@ private class Spaceship
 end
 
 def to_slice(arr)
-  Slice.new(arr.size) {|i| arr[i]}
+  Slice.new(arr.size) { |i| arr[i] }
 end
 
 describe "Slice" do
@@ -604,45 +604,44 @@ describe "Slice" do
     end
 
     it "sorts objects with no block stably by default" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
       a.sort.should eq(a) # stable
     end
 
     it "sorts objects with no block unstably optionally" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
       a.sort(stable: false).should_not eq(a) # unstable -> out of order
     end
 
     it "sorts ints with block stably" do
       a = to_slice((1..17).to_a)
-      a.sort{ 0 }.should eq(a) 
+      a.sort { 0 }.should eq(a)
     end
 
     it "sorts ints with block unstably optionally" do
       a = to_slice((1..17).to_a)
-      a.sort(stable: false){ 0 }.should_not eq(a)
+      a.sort(stable: false) { 0 }.should_not eq(a)
     end
 
     it "sorts floats with block stably" do
       a = to_slice((1..17).to_a.map &.to_f)
-      a.sort{ 0 }.should eq(a)
+      a.sort { 0 }.should eq(a)
     end
 
     it "sorts floats with block unstably optionally" do
       a = to_slice((1..17).to_a.map &.to_f)
-      a.sort(stable: false){ 0 }.should_not eq(a)
+      a.sort(stable: false) { 0 }.should_not eq(a)
     end
 
     it "sorts objects with block stably by default" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
-      a.sort{ 0 }.should eq(a) 
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
+      a.sort { 0 }.should eq(a)
     end
 
     it "sorts objects with block unstably optionally" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
-      a.sort(stable: false){ 0 }.should_not eq(a) # implementation detail but sorted out of order
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
+      a.sort(stable: false) { 0 }.should_not eq(a) # implementation detail but sorted out of order
     end
-
   end
 
   describe "sort!" do
@@ -720,13 +719,13 @@ describe "Slice" do
     end
 
     it "sort! objects with no block stably by default" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
       original = a.dup
-      a.sort!.should eq(original) 
+      a.sort!.should eq(original)
     end
 
     it "sort! objects with no block unstably optionally" do
-      a = to_slice((1..177).to_a.map{Spaceship.new(0.0)})
+      a = to_slice((1..177).to_a.map { Spaceship.new(0.0) })
       original = a.dup
       a.sort!(stable: false).should_not eq(original) # unstable -> out of order
     end
@@ -734,42 +733,41 @@ describe "Slice" do
     it "sort! ints with block stably" do
       a = to_slice((1..17).to_a)
       original = a.dup
-      a.sort!{ 0 }.should eq(original) 
+      a.sort! { 0 }.should eq(original)
     end
 
     it "sort! ints with block unstably optionally" do
       a = to_slice((1..17).to_a)
       original = a.dup
-      a.sort!(stable: false){ 0 }.should_not eq(original)
+      a.sort!(stable: false) { 0 }.should_not eq(original)
     end
 
     it "sort! floats with block stably" do
       a = to_slice((1..17).to_a.map &.to_f)
       original = a.dup
-      a.sort!{ 0 }.should eq(original)
+      a.sort! { 0 }.should eq(original)
     end
 
     it "sort! floats with block unstably optionally" do
       a = to_slice((1..17).to_a.map &.to_f)
       original = a.dup
-      a.sort!(stable: false){ 0 }.should_not eq(original)
+      a.sort!(stable: false) { 0 }.should_not eq(original)
     end
 
     it "sort! objects with block stably by default" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
       original = a.dup
-      a.sort!{ 0 }.should eq(original) 
+      a.sort! { 0 }.should eq(original)
     end
 
     it "sort! objects with block unstably optionally" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
       original = a.dup
-      a.sort!(stable: false){ 0 }.should_not eq(original) # implementation detail but sorted out of order
+      a.sort!(stable: false) { 0 }.should_not eq(original) # implementation detail but sorted out of order
     end
   end
 
   describe "sort_by" do
-
     it "sorts by" do
       a = Slice["foo", "a", "hello"]
       b = a.sort_by &.size
@@ -780,43 +778,42 @@ describe "Slice" do
     it "sorts by with block returning ints stably" do
       # we special case default "sorting by ints" for #sort to unstable, but want stable default for sort_by
       a = to_slice((1..17).to_a)
-      sorted = a.sort_by{|i| i == 6 ? 0 : 1}
+      sorted = a.sort_by { |i| i == 6 ? 0 : 1 }
       expected = (1..17).to_a
-      expected.reject!{|i| i == 6}
+      expected.reject! { |i| i == 6 }
       expected.unshift 6 # should be at beginning now, those following stay in order
       sorted.should eq(to_slice(expected))
     end
 
     it "sorts by ints with block stably" do
       a = to_slice((1..17).to_a)
-      a.sort_by{ 0 }.should eq(a) # no way to assert whether it was stable or not...should end up sorted either way
+      a.sort_by { 0 }.should eq(a) # no way to assert whether it was stable or not...should end up sorted either way
     end
 
     it "sorts by ints with block unstably optionally" do
       a = to_slice((1..17).to_a)
-      a.sort_by(stable: false){ 0 }.should_not eq(a)
+      a.sort_by(stable: false) { 0 }.should_not eq(a)
     end
 
     it "sorts by objects with block stably by default" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
-      a.sort_by{ 0 }.should eq(a) 
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
+      a.sort_by { 0 }.should eq(a)
     end
 
     it "sorts by objects with block unstably optionally" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
-      a.sort_by(stable: false){ 0 }.should_not eq(a) # implementation detail but sorted out of order
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
+      a.sort_by(stable: false) { 0 }.should_not eq(a) # implementation detail but sorted out of order
     end
 
     it "sorts by objects with block returning object stably by default" do
-      a = to_slice((1..17).to_a.map{ |i| Spaceship.new(i.to_f)})
-      a.sort_by{ |spaceship| spaceship }.should eq(a) 
+      a = to_slice((1..17).to_a.map { |i| Spaceship.new(i.to_f) })
+      a.sort_by { |spaceship| spaceship }.should eq(a)
     end
 
     it "sorts by objects with block returning object unstably optionally" do
-      a = to_slice((1..17).to_a.map{ |i| Spaceship.new(i.to_f)})
-      a.sort_by(stable: false){ |spaceship| spaceship }.should eq(a) 
+      a = to_slice((1..17).to_a.map { |i| Spaceship.new(i.to_f) })
+      a.sort_by(stable: false) { |spaceship| spaceship }.should eq(a)
     end
-
   end
 
   describe "sort_by!" do
@@ -836,9 +833,9 @@ describe "Slice" do
     it "sorts by! with block returning ints stably" do
       # we special case default "sorting by ints" for #sort to unstable, but want stable default for sort_by
       a = to_slice((1..17).to_a)
-      a.sort_by!{|i| i == 6 ? 0 : 1}
+      a.sort_by! { |i| i == 6 ? 0 : 1 }
       expected = (1..17).to_a
-      expected.reject!{|i| i == 6}
+      expected.reject! { |i| i == 6 }
       expected.unshift 6 # should be at beginning now, those following stay in order
       a.should eq(to_slice(expected))
     end
@@ -846,37 +843,37 @@ describe "Slice" do
     it "sorts by! ints with block stably" do
       a = to_slice((1..17).to_a)
       original = a.dup
-      a.sort_by!{ 0 }.should eq(original) # no way to assert whether it was stable or not...should end up sorted either way
+      a.sort_by! { 0 }.should eq(original) # no way to assert whether it was stable or not...should end up sorted either way
     end
 
     it "sorts by! ints with block unstably optionally" do
       a = to_slice((1..17).to_a)
       original = a.dup
-      a.sort_by!(stable: false){ 0 }.should_not eq(original)
+      a.sort_by!(stable: false) { 0 }.should_not eq(original)
     end
 
     it "sorts by! objects with block stably by default" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
       original = a.dup
-      a.sort_by!{ 0 }.should eq(original) 
+      a.sort_by! { 0 }.should eq(original)
     end
 
     it "sorts by! objects with block unstably optionally" do
-      a = to_slice((1..17).to_a.map{Spaceship.new(0.0)})
+      a = to_slice((1..17).to_a.map { Spaceship.new(0.0) })
       original = a.dup
-      a.sort_by!(stable: false){ 0 }.should_not eq(original) # implementation detail but sorted out of order
+      a.sort_by!(stable: false) { 0 }.should_not eq(original) # implementation detail but sorted out of order
     end
 
     it "sorts by objects with block returning object stably by default" do
-      a = to_slice((1..17).to_a.map{ |i| Spaceship.new(i.to_f)})
+      a = to_slice((1..17).to_a.map { |i| Spaceship.new(i.to_f) })
       original = a.dup
-      a.sort_by!{ |spaceship| spaceship }.should eq(original) 
+      a.sort_by! { |spaceship| spaceship }.should eq(original)
     end
 
     it "sorts by! objects with block returning object unstably optionally" do
-      a = to_slice((1..17).to_a.map{ |i| Spaceship.new(i.to_f)})
+      a = to_slice((1..17).to_a.map { |i| Spaceship.new(i.to_f) })
       original = a.dup
-      a.sort_by!(stable: false){ |spaceship| spaceship }.should eq(original) 
+      a.sort_by!(stable: false) { |spaceship| spaceship }.should eq(original)
     end
   end
 

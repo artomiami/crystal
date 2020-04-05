@@ -5,7 +5,6 @@ struct Slice(T)
     insertion_sort!(a, 0, n)
   end
 
-
   protected def self.quick_sort_for_intro_sort!(a, n, d)
     while n > 16
       if d == 0
@@ -85,7 +84,7 @@ struct Slice(T)
     end
   end
 
-  protected def self.insertion_sort!(a, start, n) 
+  protected def self.insertion_sort!(a, start, n)
     a += start
     (1...n).each do |i|
       l = a + i
