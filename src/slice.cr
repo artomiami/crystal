@@ -775,7 +775,7 @@ struct Slice(T)
   end
 
   private def equals_are_identical?
-    {{ T < Number }} # TODO String etc.
+    {{ T < Primitive }} # TODO String etc.
   end
 
   private def check_size(count : Int)

@@ -1746,16 +1746,39 @@ class Array(T)
 
   # Returns a new array with all elements sorted based on the return value of
   # their comparison method `#<=>`
-  # If *stable* is true performs a stable sort (default).  For primitive types
-  # where instances are interchangeable performs an unstable (faster
-  # sort by default.
+  #
+  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more RAM).  
+  # If *stable* is false, performs an unstable sort 
+  # (faster, but can rearrange order of equal elements).
+  # For elements where being equal means interchangeable (Primitives), unstable sort is the default
+  # (since identity isn't distinguishable, uses faster method by default).
+  # For other types, stable sort is the default.
   #
   # ```
   # a = [3, 1, 2]
   # a.sort # => [1, 2, 3]
   # a      # => [3, 1, 2]
+  #
+  # class MyClass
+  #   property val : Float64
+  #   def initialize(@val)
+  #   end
+  #   def <=>(other)
+  #     self.val <=> other.val
+  #   end
+  # end
+  #
+  # b = MyClass.new(1.0)
+  # c = MyClass.new(1.0)
+  # [b, c].sort # => [b, c] order is preserved as b and c are equal
+  # [b, c].sort(stable = false) # => [?, ?] order of equals may change
+  # d = MyClass.new(0.0)
+  # e = MyClass.new(2.0)
+  # [b,c,d,e].sort # => [d, b, c, e] order is preserved
+  # [b,c,d,e].sort(stable = false) # => [d, ?, ?, e] order of unequals is preserved, but for equals may change
   # ```
-  def sort(stable = !equals_are_identical?) : Array(T)
+  def sort(stable = elements_have_identity?) : Array(T)
     dup.sort!(stable)
   end
 
@@ -1765,6 +1788,12 @@ class Array(T)
   # The block must implement a comparison between two elements *a* and *b*,
   # where `a < b` returns `-1`, `a == b` returns `0`, and `a > b` returns `1`.
   # The comparison operator `<=>` can be used for this.
+  #
+  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more RAM).
+  # If *stable* is false, performs an unstable sort 
+  # (faster, but can rearrange order of equal elements).
+  # Default is true.  See `#sort` for examples.
   #
   # ```
   # a = [3, 1, 2]
@@ -1784,12 +1813,20 @@ class Array(T)
   # Modifies `self` by sorting all elements based on the return value of their
   # comparison method `#<=>`
   #
+  # If *stable* is true, performs a stable sort, equal elements' relative order is preserved.
+  # (slower, uses more RAM).  
+  # If *stable* is false, performs an unstable sort 
+  # (faster, but can rearrange order of equal elements).
+  # For elements where being equal means interchangeable (Primitives), unstable sort is the default
+  # (since identity isn't distinguishable, it uses faster method by default).
+  # For other types, stable sort is the default.  See `#sort` for examples.
+  #
   # ```
   # a = [3, 1, 2]
   # a.sort!
   # a # => [1, 2, 3]
   # ```
-  def sort!(stable = !equals_are_identical?) : Array(T)
+  def sort!(stable = elements_have_identity?) : Array(T)
     Slice.new(to_unsafe, size).sort!(stable)
     self
   end
@@ -1801,6 +1838,12 @@ class Array(T)
   # *a* and *b*, where `a < b` returns `-1`, `a == b` returns `0`,
   # and `a > b` returns `1`.
   # The comparison operator `<=>` can be used for this.
+  #
+  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more RAM).
+  # If *stable* is false, performs an unstable sort 
+  # (faster, but can rearrange order of equal elements).
+  # Default is true.  See `#sort` for examples.
   #
   # ```
   # a = [3, 1, 2]
@@ -1820,6 +1863,12 @@ class Array(T)
   # each element, then the comparison method #<=> is called on the object
   # returned from the block to determine sort order.
   #
+  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved.
+  # (slower, uses more RAM).
+  # If *stable* is false, performs an unstable sort 
+  # (faster, but can rearrange order of equal elements).
+  # Default is true.  See `#sort` for examples.
+  #
   # ```
   # a = %w(apple pear fig)
   # b = a.sort_by { |word| word.size }
@@ -1833,6 +1882,12 @@ class Array(T)
   # Modifies `self` by sorting all elements. The given block is called for
   # each element, then the comparison method #<=> is called on the object
   # returned from the block to determine sort order.
+  #
+  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more RAM).
+  # If *stable* is false, performs an unstable sort 
+  # (faster, but can rearrange order of equal elements).
+  # Default is true.  See `#sort` for examples.
   #
   # ```
   # a = %w(apple pear fig)
@@ -2070,8 +2125,8 @@ class Array(T)
     double_capacity if @size == @capacity
   end
 
-  private def equals_are_identical?
-    {{ T < Number }} # TODO String etc.
+  private def elements_have_identity?
+    !{{ T < Primitive || T == String }}
   end
 
   private def double_capacity
