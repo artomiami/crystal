@@ -677,7 +677,7 @@ struct Slice(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for description.
+  # Default is `true`.  See `#sort` for details.
   #
   # ```
   # a = Slice[3, 1, 2]
@@ -703,7 +703,7 @@ struct Slice(T)
   # (faster, uses less memory).
   # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
   # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
-  # For everything else, stable sort is the default.  See `#sort` for description.
+  # For everything else, stable sort is the default.  See `#sort` for details.
   #
   # ```
   # a = Slice[3, 1, 2]
@@ -733,7 +733,7 @@ struct Slice(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for description.
+  # Default is `true`.  See `#sort` for details.
   #
   # ```
   # a = Slice[3, 1, 2]
@@ -760,7 +760,7 @@ struct Slice(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for description.
+  # Default is `true`.  See `#sort` for details.
   #
   # ```
   # a = Slice["apple", "pear", "fig"]
@@ -780,7 +780,7 @@ struct Slice(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for description.
+  # Default is `true`.  See `#sort` for details.
   #
   # ```
   # a = Slice["apple", "pear", "fig"]
