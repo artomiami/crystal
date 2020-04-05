@@ -1747,12 +1747,12 @@ class Array(T)
   # Returns a new array with all elements sorted based on the return value of
   # their comparison method `#<=>`
   #
-  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved
-  # (slower, uses more RAM).  
-  # If *stable* is false, performs an unstable sort 
-  # (faster, but can rearrange order of equal elements).
-  # For elements where being equal means interchangeable (Primitives, Strings), unstable sort is the default
-  # (since identity isn't distinguishable, relative order doesn't matter, it uses faster method by default).
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
+  # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
   # For everything else, stable sort is the default.
   #
   # ```
@@ -1789,11 +1789,11 @@ class Array(T)
   # where `a < b` returns `-1`, `a == b` returns `0`, and `a > b` returns `1`.
   # The comparison operator `<=>` can be used for this.
   #
-  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved
-  # (slower, uses more RAM).
-  # If *stable* is false, performs an unstable sort 
-  # (faster, but can rearrange order of equal elements).
-  # Default is true.  See `#sort` for description.
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # Default is `true`.  See `#sort` for description.
   #
   # ```
   # a = [3, 1, 2]
@@ -1813,12 +1813,12 @@ class Array(T)
   # Modifies `self` by sorting all elements based on the return value of their
   # comparison method `#<=>`
   #
-  # If *stable* is true, performs a stable sort, equal elements' relative order is preserved.
-  # (slower, uses more RAM).  
-  # If *stable* is false, performs an unstable sort 
-  # (faster, but can rearrange order of equal elements).
-  # For elements where being equal means interchangeable (Primitives, Strings), unstable sort is the default
-  # (since identity isn't distinguishable, relative order doesn't matter, it uses faster method by default).
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
+  # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
   # For everything else, stable sort is the default.  See `#sort` for description.
   #
   # ```
@@ -1839,11 +1839,11 @@ class Array(T)
   # and `a > b` returns `1`.
   # The comparison operator `<=>` can be used for this.
   #
-  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved
-  # (slower, uses more RAM).
-  # If *stable* is false, performs an unstable sort 
-  # (faster, but can rearrange order of equal elements).
-  # Default is true.  See `#sort` for description.
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # Default is `true`.  See `#sort` for description.
   #
   # ```
   # a = [3, 1, 2]
@@ -1863,11 +1863,11 @@ class Array(T)
   # each element, then the comparison method #<=> is called on the object
   # returned from the block to determine sort order.
   #
-  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved.
-  # (slower, uses more RAM).
-  # If *stable* is false, performs an unstable sort 
-  # (faster, but can rearrange order of equal elements).
-  # Default is true.  See `#sort` for description.
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # Default is `true`.  See `#sort` for description.
   #
   # ```
   # a = %w(apple pear fig)
@@ -1883,11 +1883,11 @@ class Array(T)
   # each element, then the comparison method #<=> is called on the object
   # returned from the block to determine sort order.
   #
-  # If *stable* is true, performs a stable sort, i.e. equal elements' relative order is preserved
-  # (slower, uses more RAM).
-  # If *stable* is false, performs an unstable sort 
-  # (faster, but can rearrange order of equal elements).
-  # Default is true.  See `#sort` for description.
+  # If *stable* is `true`, performs a stable sort, i.e. equal elements' relative order is preserved
+  # (slower, uses more memory).
+  # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
+  # (faster, uses less memory).
+  # Default is `true`.  See `#sort` for description.
   #
   # ```
   # a = %w(apple pear fig)
