@@ -657,13 +657,12 @@ struct Slice(T)
   #
   # b = MyClass.new(1)
   # c = MyClass.new(1)
-  # [b, c].sort                 # => [b, c] relative order is preserved by default, since b and c are equal
-  # [b, c].sort(stable = false) # => [?, ?] relative order may change
+  # Slice[b, c].sort                 # => [b, c] relative order is preserved by default, since b and c are equal
+  # Slice[b, c].sort(stable = false) # => [?, ?] relative order may change
   # d = MyClass.new(0)
   # e = MyClass.new(2)
-  # [b, c, d, e].sort(stable = true)  # => [d, b, c, e] relative order is preserved
-  # [b, c, d, e].sort                 # => [d, b, c, e] relative order is preserved by default
-  # [b, c, d, e].sort(stable = false) # => [d, ?, ?, e] absolute order is respected, but relative order for equals may change
+  # Slice[b, c, d, e].sort                 # => [d, b, c, e] relative order is preserved by default
+  # Slice[b, c, d, e].sort(stable = false) # => [d, ?, ?, e] absolute order is respected, but relative order for equals may change
   # ```
   def sort(stable = elements_have_identity?) : Slice(T)
     dup.sort!(stable)
@@ -688,9 +687,10 @@ struct Slice(T)
   #
   # b # => Slice[3, 2, 1]
   # a # => Slice[3, 1, 2]
-  # b = [any array of objects]
-  # b.sort!(stable = false) { |a, b| b <=> a } 
-  # b # => a sorted array, but ordering of equal elements may be different than in original
+  # c = MyClass.new(3); d = Myclass.new(2); e = MyClass.new(3)
+  # f = Slice[c, d, e]
+  # g = f.sort(stable = false) { |a, b| b.val <=> a.val }
+  # g # => Slice[c, e, d] or [e, c, d] relative order of elements that compare as equal may change
   # ```
   def sort(stable = true, &block : T, T -> U) : Slice(T) forall U
     {% unless U <= Int32? %}
@@ -715,6 +715,10 @@ struct Slice(T)
   # a = Slice[3, 1, 2]
   # a.sort!
   # a # => Slice[1, 2, 3]
+  # b = MyClass.new(3); c = Myclass.new(2); d = MyClass.new(3)
+  # e = Slice[c, d, e]
+  # e.sort!(stable = false) { |a, b| b.val <=> a.val }
+  # e # => [c, e, d] or [e, c, d] relative order of elements that compare as equal may change
   # ```
   def sort!(stable = elements_have_identity?) : Slice(T)
     if (stable)
@@ -745,6 +749,14 @@ struct Slice(T)
   # a = Slice[3, 1, 2]
   # a.sort! { |a, b| b <=> a }
   # a # => Slice[3, 2, 1]
+  # b = Slice[any number of objects]
+  # b.sort!(stable = false) { |a, b| b <=> a }
+  # b # => a sorted slice, but ordering of equal elements may change
+  # c = Slice["fig",  "pear", "ice", "apple"]
+  # d = c.sort_by { |word| word.size }
+  # d # => Slice["fig", "ice", "pear", "apple"] default is to preserve relative order of equal elements
+  # e = c.sort_by(stable = false) { |word| word.size }
+  # e # => Slice["fig", "ice", "pear", "apple"] or ["ice", "fig", "pear", "apple"] relative order of equal elements may change
   # ```
   def sort!(stable = true, &block : T, T -> U) : Slice(T) forall U
     {% unless U <= Int32? %}
@@ -773,6 +785,11 @@ struct Slice(T)
   # b = a.sort_by { |word| word.size }
   # b # => Slice["fig", "pear", "apple"]
   # a # => Slice["apple", "pear", "fig"]
+  # c = Slice["fig",  "pear", "ice", "apple"]
+  # d = c.sort_by { |word| word.size }
+  # d # => Slice["fig", "ice", "pear", "apple"] default is to preserve relative order of equal elements
+  # e = c.sort_by(stable = false) { |word| word.size }
+  # e # => Slice["fig", "ice", "pear", "apple"] or ["ice", "fig", "pear", "apple"] order of equal elements may change
   # ```
   def sort_by(stable = true, &block : T -> _) : Slice(T)
     dup.sort_by!(stable) { |e| yield(e) }
@@ -792,6 +809,12 @@ struct Slice(T)
   # a = Slice["apple", "pear", "fig"]
   # a.sort_by! { |word| word.size }
   # a # => Slice["fig", "pear", "apple"]
+  # b = Slice["fig",  "pear", "ice", "apple"]
+  # b.sort_by! { |word| word.size }
+  # b # => Slice["fig", "ice", "pear", "apple"] default is to preserve order of equal original elements
+  # c = Slice["fig",  "pear", "ice", "apple"]
+  # c.sort_by!(stable = false) { |word| word.size }
+  # c # => Slice["fig", "ice", "pear", "apple"] or ["ice", "fig", "pear", "apple"] order of equal elements may change
   # ```
   def sort_by!(stable = true, &block : T -> _) : Slice(T)
     sorted = map { |e| {e, yield(e)} }.sort!(stable) { |x, y| x[1] <=> y[1] }

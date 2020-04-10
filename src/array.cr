@@ -1773,13 +1773,10 @@ class Array(T)
   #
   # b = MyClass.new(1)
   # c = MyClass.new(1)
-  # [b, c].sort                 # => [b, c] relative order is preserved by default, since b and c are equal
-  # [b, c].sort(stable = false) # => [?, ?] relative order may change
   # d = MyClass.new(0)
   # e = MyClass.new(2)
-  # [b, c, d, e].sort(stable = true)  # => [d, b, c, e] relative order is preserved
   # [b, c, d, e].sort                 # => [d, b, c, e] relative order is preserved by default
-  # [b, c, d, e].sort(stable = false) # => [d, ?, ?, e] absolute order is respected, but relative order for equals may change
+  # [b, c, d, e].sort(stable = false) # => [d, b, c, e] or [d, c, b, e] absolute order is respected, but relative order for equals may change
   # ```
   def sort(stable = elements_have_identity?) : Array(T)
     dup.sort!(stable)
@@ -1804,7 +1801,10 @@ class Array(T)
   #
   # b # => [3, 2, 1]
   # a # => [3, 1, 2]
-  # c = a.sort(stable = false) { |a, b| b <=> a } # order of equal elements may be different than in original
+  # c = MyClass.new(3); d = Myclass.new(2); e = MyClass.new(3)
+  # f = [c, d, e]
+  # g = f.sort(stable = false) { |a, b| b.val <=> a.val }
+  # g # => [c, e, d] or [e, c, d] relative order of elements that compare as equal may change
   # ```
   def sort(stable = true, &block : T, T -> U) : Array(T) forall U
     {% unless U <= Int32? %}
@@ -1829,9 +1829,10 @@ class Array(T)
   # a = [3, 1, 2]
   # a.sort!
   # a # => [1, 2, 3]
-  # b = [any array of objects]
-  # b.sort!(stable = false) { |a, b| b <=> a }
-  # b # => a sorted array, but ordering of equal elements may be different than in original
+  # b = MyClass.new(3); c = Myclass.new(2); d = MyClass.new(3)
+  # e = [c, d, e]
+  # e.sort!(stable = false) { |a, b| b.val <=> a.val }
+  # e # => [c, e, d] or [e, c, d] relative order of elements that compare as equal may change
   # ```
   def sort!(stable = elements_have_identity?) : Array(T)
     Slice.new(to_unsafe, size).sort!(stable)
@@ -1856,8 +1857,10 @@ class Array(T)
   # a = [3, 1, 2]
   # a.sort! { |a, b| b <=> a }
   # a # => [3, 2, 1]
-  # b.sort!(stable = false) { |a, b| b <=> a } 
-  # b # => a sorted array, but ordering of equal elements may be different than in original
+  # b = MyClass.new(3); c = Myclass.new(2); d = MyClass.new(3)
+  # e = [c, d, e]
+  # e.sort!(stable = false) { |a, b| b.val <=> a.val }
+  # e # => [c, e, d] or [e, c, d] relative order of elements that compare as equal may change
   # ```
   def sort!(stable = true, &block : T, T -> U) : Array(T) forall U
     {% unless U <= Int32? %}
@@ -1883,6 +1886,11 @@ class Array(T)
   # b = a.sort_by { |word| word.size }
   # b # => ["fig", "pear", "apple"]
   # a # => ["apple", "pear", "fig"]
+  # c = ["fig",  "pear", "ice", "apple"]
+  # d = c.sort_by { |word| word.size }
+  # d # => ["fig", "ice", "pear", "apple"] default is to preserve relative order of original elements
+  # e = c.sort_by(stable = false) { |word| word.size }
+  # e # => ["fig", "ice", "pear", "apple"] or ["ice", "fig", "pear", "apple"] relative order of equal elements may change
   # ```
   def sort_by(stable = true, &block : T -> _) : Array(T)
     dup.sort_by!(stable) { |e| yield(e) }
@@ -1902,6 +1910,12 @@ class Array(T)
   # a = %w(apple pear fig)
   # a.sort_by! { |word| word.size }
   # a # => ["fig", "pear", "apple"]
+  # b = ["fig",  "pear", "ice", "apple"]
+  # b.sort_by! { |word| word.size }
+  # b # => ["fig", "ice", "pear", "apple"] default is to preserve relative order of equal elements
+  # c = ["fig",  "pear", "ice", "apple"]
+  # c.sort_by!(stable = false) { |word| word.size }
+  # c # => ["fig", "ice", "pear", "apple"] or ["ice", "fig", "pear", "apple"] relative order of equal elements may change
   # ```
   def sort_by!(stable = true, &block : T -> _) : Array(T)
     sorted = map { |e| {e, yield(e)} }.sort!(stable) { |x, y| x[1] <=> y[1] }
