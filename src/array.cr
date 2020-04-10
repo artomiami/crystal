@@ -1778,7 +1778,7 @@ class Array(T)
   # d = MyClass.new(0)
   # e = MyClass.new(2)
   # [b, c, d, e].sort                 # => [d, b, c, e] relative order is preserved
-  # [b, c, d, e].sort(stable = false) # => [d, ?, ?, e] order of unequals is respected, but relative order for equals may change
+  # [b, c, d, e].sort(stable = false) # => [d, ?, ?, e] absolute order is respected, but relative order for equals may change
   # ```
   def sort(stable = elements_have_identity?) : Array(T)
     dup.sort!(stable)
