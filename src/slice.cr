@@ -636,7 +636,7 @@ struct Slice(T)
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
   # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
-  # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
+  # (identity isn't distinguishable, so relative order doesn't matter, so it defaults to faster method).
   # For everything else, stable sort is the default.
   #
   # ```
@@ -661,7 +661,8 @@ struct Slice(T)
   # [b, c].sort(stable = false) # => [?, ?] relative order may change
   # d = MyClass.new(0)
   # e = MyClass.new(2)
-  # [b, c, d, e].sort                 # => [d, b, c, e] relative order is preserved
+  # [b, c, d, e].sort(stable = true)  # => [d, b, c, e] relative order is preserved
+  # [b, c, d, e].sort                 # => [d, b, c, e] relative order is preserved by default
   # [b, c, d, e].sort(stable = false) # => [d, ?, ?, e] absolute order is respected, but relative order for equals may change
   # ```
   def sort(stable = elements_have_identity?) : Slice(T)
@@ -679,7 +680,7 @@ struct Slice(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for details.
+  # Default is `true`.  See `#sort` for more details.
   #
   # ```
   # a = Slice[3, 1, 2]
@@ -687,6 +688,9 @@ struct Slice(T)
   #
   # b # => Slice[3, 2, 1]
   # a # => Slice[3, 1, 2]
+  # b = [any array of objects]
+  # b.sort!(stable = false) { |a, b| b <=> a } 
+  # b # => a sorted array, but ordering of equal elements may be different than in original
   # ```
   def sort(stable = true, &block : T, T -> U) : Slice(T) forall U
     {% unless U <= Int32? %}
@@ -705,7 +709,7 @@ struct Slice(T)
   # (faster, uses less memory).
   # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
   # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
-  # For everything else, stable sort is the default.  See `#sort` for details.
+  # For everything else, stable sort is the default.  See `#sort` for more details.
   #
   # ```
   # a = Slice[3, 1, 2]
@@ -735,7 +739,7 @@ struct Slice(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for details.
+  # Default is `true`.  See `#sort` for more details.
   #
   # ```
   # a = Slice[3, 1, 2]
@@ -762,7 +766,7 @@ struct Slice(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for details.
+  # Default is `true`.  See `#sort` for more details.
   #
   # ```
   # a = Slice["apple", "pear", "fig"]
@@ -782,7 +786,7 @@ struct Slice(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for details.
+  # Default is `true`.  See `#sort` for more details.
   #
   # ```
   # a = Slice["apple", "pear", "fig"]

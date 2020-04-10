@@ -1752,7 +1752,7 @@ class Array(T)
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
   # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
-  # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
+  # (identity isn't distinguishable, so relative order doesn't matter, so it defaults to faster method).
   # For everything else, stable sort is the default.
   #
   # ```
@@ -1777,7 +1777,8 @@ class Array(T)
   # [b, c].sort(stable = false) # => [?, ?] relative order may change
   # d = MyClass.new(0)
   # e = MyClass.new(2)
-  # [b, c, d, e].sort                 # => [d, b, c, e] relative order is preserved
+  # [b, c, d, e].sort(stable = true)  # => [d, b, c, e] relative order is preserved
+  # [b, c, d, e].sort                 # => [d, b, c, e] relative order is preserved by default
   # [b, c, d, e].sort(stable = false) # => [d, ?, ?, e] absolute order is respected, but relative order for equals may change
   # ```
   def sort(stable = elements_have_identity?) : Array(T)
@@ -1795,7 +1796,7 @@ class Array(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for details.
+  # Default is `true`.  See `#sort` for more details.
   #
   # ```
   # a = [3, 1, 2]
@@ -1803,6 +1804,7 @@ class Array(T)
   #
   # b # => [3, 2, 1]
   # a # => [3, 1, 2]
+  # c = a.sort(stable = false) { |a, b| b <=> a } # order of equal elements may be different than in original
   # ```
   def sort(stable = true, &block : T, T -> U) : Array(T) forall U
     {% unless U <= Int32? %}
@@ -1821,12 +1823,15 @@ class Array(T)
   # (faster, uses less memory).
   # For elements where being equal means interchangeable (`Primitive` and `String`), unstable sort is the default
   # (identity isn't distinguishable, so relative order doesn't matter, it defaults to faster method).
-  # For everything else, stable sort is the default.  See `#sort` for details.
+  # For everything else, stable sort is the default.  See `#sort` for more details.
   #
   # ```
   # a = [3, 1, 2]
   # a.sort!
   # a # => [1, 2, 3]
+  # b = [any array of objects]
+  # b.sort!(stable = false) { |a, b| b <=> a }
+  # b # => a sorted array, but ordering of equal elements may be different than in original
   # ```
   def sort!(stable = elements_have_identity?) : Array(T)
     Slice.new(to_unsafe, size).sort!(stable)
@@ -1845,12 +1850,14 @@ class Array(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for details.
+  # Default is `true`.  See `#sort` for more details.
   #
   # ```
   # a = [3, 1, 2]
   # a.sort! { |a, b| b <=> a }
   # a # => [3, 2, 1]
+  # b.sort!(stable = false) { |a, b| b <=> a } 
+  # b # => a sorted array, but ordering of equal elements may be different than in original
   # ```
   def sort!(stable = true, &block : T, T -> U) : Array(T) forall U
     {% unless U <= Int32? %}
@@ -1869,7 +1876,7 @@ class Array(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for details.
+  # Default is `true`.  See `#sort` for more details.
   #
   # ```
   # a = %w(apple pear fig)
@@ -1889,7 +1896,7 @@ class Array(T)
   # (slower, uses more memory).
   # If *stable* is `false`, performs an unstable sort, i.e. equal elements' relative order may change
   # (faster, uses less memory).
-  # Default is `true`.  See `#sort` for details.
+  # Default is `true`.  See `#sort` for more details.
   #
   # ```
   # a = %w(apple pear fig)
