@@ -7,6 +7,7 @@
 # efficient way.
 module IO::Buffered
   @in_buffer_rem = Bytes.empty
+  @offset_in_buffer_rem = 0
   @out_count = 0
   @sync = false
   @read_buffering = true
@@ -44,23 +45,27 @@ module IO::Buffered
     @buffer_size = value
   end
 
+  def in_buffer_rem_empty?
+    return @in_buffer_rem.size == @offset_in_buffer_rem
+  end
+
   # :nodoc:
   def read_byte : UInt8?
     check_open
 
-    fill_buffer if read_buffering? && @in_buffer_rem.empty?
-    if @in_buffer_rem.empty?
+    fill_buffer if read_buffering? && in_buffer_rem_empty?
+    if in_buffer_rem_empty?
       return nil if read_buffering?
 
       byte = uninitialized UInt8
-      if read(Slice.new(pointerof(byte), 1)) == 1
+      if read(Slice.new(pointerof(byte), 1)) == 1 # XXX ??
         byte
       else
         nil
       end
     else
-      b = @in_buffer_rem[0]
-      @in_buffer_rem += 1
+      b = @in_buffer_rem[@offset_in_buffer_rem]
+      @offset_in_buffer_rem += 1
       b
     end
   end
@@ -72,7 +77,7 @@ module IO::Buffered
     count = slice.size
     return 0 if count == 0
 
-    if @in_buffer_rem.empty?
+    if in_buffer_rem_empty?
       # If we are asked to read more than half the buffer's size,
       # read directly into the slice, as it's not worth the extra
       # memory copy.
@@ -80,14 +85,18 @@ module IO::Buffered
         return unbuffered_read(slice[0, count]).to_i
       else
         fill_buffer
-        return 0 if @in_buffer_rem.empty?
+        return 0 if in_buffer_rem_empty?
       end
     end
 
-    to_read = Math.min(count, @in_buffer_rem.size)
-    slice.copy_from(@in_buffer_rem.to_unsafe, to_read)
-    @in_buffer_rem += to_read
+    to_read = Math.min(count, in_buffer_rem_size)
+    slice.copy_from(@in_buffer_rem.to_unsafe + @offset_in_buffer_rem, to_read)
+    @offset_in_buffer_rem += to_read
     to_read
+  end
+
+  def in_buffer_rem_size
+    @in_buffer_rem.size - @offset_in_buffer_rem
   end
 
   # Returns the bytes hold in the read buffer.
@@ -99,26 +108,26 @@ module IO::Buffered
   def peek : Bytes?
     check_open
 
-    if @in_buffer_rem.empty?
+    if in_buffer_rem_empty?
       fill_buffer
-      if @in_buffer_rem.empty?
+      if in_buffer_rem_empty?
         return Bytes.empty # EOF
       end
     end
 
-    @in_buffer_rem
+    @in_buffer_rem + @offset_in_buffer_rem
   end
 
   # :nodoc:
   def skip(bytes_count) : Nil
     check_open
 
-    if bytes_count <= @in_buffer_rem.size
-      @in_buffer_rem += bytes_count
+    if bytes_count <= in_buffer_rem_size
+      @offset_in_buffer_rem += bytes_count
       return
     end
 
-    bytes_count -= @in_buffer_rem.size
+    bytes_count -= in_buffer_rem_size
     @in_buffer_rem = Bytes.empty
 
     super(bytes_count)
@@ -235,9 +244,10 @@ module IO::Buffered
   end
 
   private def fill_buffer
-    in_buffer = in_buffer()
+    in_buffer = in_buffer() # XXX?
     size = unbuffered_read(Slice.new(in_buffer, @buffer_size)).to_i
     @in_buffer_rem = Slice.new(in_buffer, size)
+    @offset_in_buffer_rem = 0
   end
 
   private def in_buffer

@@ -270,6 +270,8 @@ abstract class IO
     String::Formatter(typeof(args)).new(format_string, args, self).format
   end
 
+  @byte_slice : Slice(UInt8) = Slice(UInt8).new(1)
+
   # Reads a single byte from this `IO`. Returns `nil` if there is no more
   # data to read.
   #
@@ -279,9 +281,8 @@ abstract class IO
   # io.read_byte # => nil
   # ```
   def read_byte : UInt8?
-    byte = uninitialized UInt8
-    if read(Slice.new(pointerof(byte), 1)) == 1
-      byte
+    if read(@byte_slice) == 1
+      @byte_slice[0]
     else
       nil
     end
@@ -535,7 +536,8 @@ abstract class IO
     count = slice.size
     while slice.size > 0
       read_bytes = read slice
-      return nil if read_bytes == 0
+      return nil if read_bytes == 0 # didn't read enough bytes
+      return count if read_bytes == count # only create new slice object, below, if we're going to need it
       slice += read_bytes
     end
     count

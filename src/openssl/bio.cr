@@ -3,7 +3,7 @@ require "./lib_crypto"
 # :nodoc:
 struct OpenSSL::BIO
   def self.get_data(bio) : Void*
-    {% if LibCrypto.has_method?(:BIO_get_data) %}
+    {% if false %}
       LibCrypto.BIO_get_data(bio)
     {% else %}
       bio.value.ptr
@@ -11,7 +11,7 @@ struct OpenSSL::BIO
   end
 
   def self.set_data(bio, data : Void*)
-    {% if LibCrypto.has_method?(:BIO_set_data) %}
+    {% if false %}
       LibCrypto.BIO_set_data(bio, data)
     {% else %}
       bio.value.ptr = data
@@ -65,7 +65,7 @@ struct OpenSSL::BIO
     end
 
     create = LibCrypto::BioMethodCreate.new do |bio|
-      {% if LibCrypto.has_method?(:BIO_set_shutdown) %}
+      {% if false %}
         LibCrypto.BIO_set_shutdown(bio, 1)
         LibCrypto.BIO_set_init(bio, 1)
         # bio.value.num = -1
